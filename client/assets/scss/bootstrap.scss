@@ -43,7 +43,34 @@
 @import "utilities";
 @import "print";
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap');
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f3f4fa;
+}
+
+
 .login {
     height: 100vh;
+}
+
+
+.content {
+    height: 100vh;
+    background-color: #f8f9ff;
+
+        .rounded-manual {
+            border-radius: 15px;
+    
+            .card-title {
+                width: fit-content;
+            }
+        }
+    
+        .button-add-another {
+            background-color: #e4ecf8;
+        }
+
 
 }
