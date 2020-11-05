@@ -5,103 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-signin-client_id" content="172830930043-gappl6eb5hr73j17vckmvrqi4mm1uuru.apps.googleusercontent.com">
     <title>Kanban</title>
-    <link rel="stylesheet" href="./assets/scss/bootstrap.css">
+    <link rel="stylesheet" href="./src/assets/scss/bootstrap.scss">
 </head>
 <body>
     <div id="app">
-        <header>
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <div class="container">
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                  <span class="navbar-toggler-icon"></span>
-                </button>
-              
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                  <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                      <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                    </li>
-                  </ul>
-                    <button class="btn btn-outline-primary my-2 my-sm-0 mr-4" id="btn-register-nav" type="submit" v-on:click="changePage('register-page')">Register</button>
-                    <button class="btn btn-primary my-2 my-sm-0" id="btn-login-nav" type="submit" v-on:click="changePage('login-page')">Login</button>
-                    <a href="#" @click="signOut()">Sign out</a>
-                </div>
-                </div>
-            </nav>
-        </header>
-    
-        <section class="register mt-5" v-if="pageName == 'register-page'">
-            <div class="container h-100">
-                <div class="row h-100">
-                    <div class="col-7 mr-5 mt-5">
-                        <img src="./assets/images/undraw_add_post_64nu.svg" class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="">
-                    </div>
-                    <div class="col-4">
-                        <div class="card p-3 shadow">
-                            <div class="card-body">
-                                <h4 class="card-title mb-4">Register</h4>
-                                <form action="" id="form-register" v-on:submit.prevent="registerMethod">
-                                    <div class="form-group">
-                                        <label for="name-register">name: </label>
-                                        <input type="text" class="form-control" name="name" id="name-register" aria-describedby="helpId" placeholder="" v-model="register.name">
-                                        <small id="helpId" class="form-text text-muted">Insert your name</small>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="email-register">Email: </label>
-                                        <input type="email" class="form-control" name="email" id="email-register" aria-describedby="helpId" placeholder="" v-model="register.email">
-                                        <small id="helpId" class="form-text text-muted">Ex: jhon@mail.com</small>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="password-register">Password: </label>
-                                        <input type="password" class="form-control" name="password" id="password-register" aria-describedby="helpId" placeholder="" v-model="register.password">
-                                        <small id="helpId" class="form-text text-muted">Insert your password</small>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Register</button>
-                                    <br> <br>
-                                    <span id="error-msg-register" class="text-danger">{{errorMsg}}</span>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    
-        <section class="login mt-5" v-else-if="pageName == 'login-page'">
-            <div class="container h-100">
-                <div class="row h-100">
-                    <div class="col-7 mr-5">
-                        <img src="./assets/images/login-authen.svg" class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="">
-                    </div>
-                    <div class="col-4">
-                        <div class="card p-3 shadow">
-                            <div class="card-body">
-                                <h4 class="card-title mb-4">Login</h4>
-                                <form action="" method="post" id="form-login" v-on:submit.prevent="loginMethod">
-                                    <div class="form-group">
-                                    <label for="email-login">Email: </label>
-                                    <input type="text" class="form-control" name="email-login" id="email-login" aria-describedby="helpId" placeholder="" v-model="login.email">
-                                    <small id="helpId" class="form-text text-muted">Ex: jhon@mail.com</small>
-                                    </div>
-                                    <div class="form-group">
-                                    <label for="password-login">Password: </label>
-                                    <input type="password" class="form-control" name="password-login" id="password-login" aria-describedby="helpId" placeholder="" v-model="login.password">
-                                    <small id="helpId" class="form-text text-muted">Insert your password</small>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Login</button>
-                                    <br> <br>
-                                    <span id="error-msg-login" class="text-danger error-msg">{{errorMsg}}</span>
-                                </form>
-                                <div class="g-signin2" v-on:click="onSignIn"></div>
-                                <!-- <div id="my-signin2" data-onsuccess></div> -->
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <section class="content h-100" v-else-if="pageName == 'content-page'">
             <div class="container-fluid">
                 <div class="row">
@@ -218,6 +125,6 @@
     <!-- <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script> -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
-    <script src="app.js"></script>
+    <script src="./src/main.js"></script>
 </body>
 </html>
