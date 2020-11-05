@@ -24,8 +24,9 @@
                                 <br> <br>
                                 <span id="error-msg-login" class="text-danger error-msg">{{errorMsg}}</span>
                             </form>
-                            <!-- <div class="g-signin2" v-on:click="onSignIn"></div> -->
-
+                              <button v-google-signin-button="clientId" class="google-signin-button"> Continue with Google
+                              </button> <br>
+                              <a href="#" @click="signOut()">Sign out</a>
                         </div>
                     </div>
                 </div>
@@ -43,6 +44,7 @@ export default {
                 email: "",
                 password: ""
             },
+            clientId: '172830930043-gappl6eb5hr73j17vckmvrqi4mm1uuru.apps.googleusercontent.com'
         }
     },
     methods: {
@@ -54,6 +56,22 @@ export default {
             this.$emit("loginMethod", data)
             this.login.email = ""
             this.login.password = ""
+        },
+        OnGoogleAuthSuccess(idToken){
+            console.log(idToken)
+            // this.$emit("OnGoogleAuthSuccess", idToken)
+        },
+        OnGoogleAuthFail(error) {
+            console.log(error)
+
+            // this.$emit("OnGoogleAuthFail", error)
+        },
+        signOut(){
+            auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+            console.log('User signed out.');
+            });
+            // this.$emit("signOut")
         }
     },
     props: ["errorMsg"]
@@ -61,5 +79,13 @@ export default {
 </script>
 
 <style>
-
+    .google-signin-button {
+    color: white;
+    background-color: red;
+    height: 50px;
+    font-size: 16px;
+    border-radius: 10px;
+    padding: 10px 20px 25px 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
 </style>

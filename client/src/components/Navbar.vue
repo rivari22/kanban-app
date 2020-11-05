@@ -14,7 +14,6 @@
                 </ul>
                 <button class="btn btn-outline-primary my-2 my-sm-0 mr-4" id="btn-register-nav" type="submit" v-on:click="changePage('register-page')">Register</button>
                 <button class="btn btn-primary my-2 my-sm-0" id="btn-login-nav" type="submit" v-on:click="changePage('login-page')">Login</button>
-                <a href="#" @click="signOut()">Sign out</a>
             </div>
             </div>
         </nav>

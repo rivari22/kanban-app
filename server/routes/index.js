@@ -9,6 +9,6 @@ router.post("/login", Controller.login)
 router.post("/googleLogin", Controller.googleLogin)
 
 router.use("/tasks", taskRoutes)
-router.use("/category", categoryRouter)
+router.use("/categories", categoryRouter)
 
 module.exports = router
