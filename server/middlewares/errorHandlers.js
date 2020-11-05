@@ -1,5 +1,5 @@
 function errorHandlers(err,req,res, next) {
-    console.log(err.name, "ini di error handler")
+    console.log(err, "ini di error handler")
     let message = err.message || "Server Internal Error"
     let status = err.response || 500
     if(err.name === "Unauthorized") {

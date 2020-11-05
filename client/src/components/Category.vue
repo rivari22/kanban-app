@@ -10,6 +10,8 @@
             :task="task"
             @deleteTask="deleteTask"
             @editTask="editTask"
+            :categories="categories"
+            @updateCatTask="updateCatTask"
           >
           </Task>
           <div class="card mb-4 rounded-manual button-add-another">
@@ -41,6 +43,10 @@
                     v-model="taskData.title"
                   />
                 </div>
+                <div class="form-group">
+                    <label for="add-description-task">Description: </label>
+                    <input type="text" class="form-control" name="add-description-task" id="add-description-task" aria-describedby="helpId" placeholder="" v-model="taskData.description">
+                </div>
                 <input type="hidden" value="category.id" />
                 <button class="btn btn-primary" type="submit">Add Task</button>
               </form>
@@ -62,6 +68,7 @@ export default {
       taskData: {
         id: "",
         title: "",
+        description: "",
         CategoryId: ""
       },
     };
@@ -76,17 +83,22 @@ export default {
     addTask(catId){
         const data = {
             title: this.taskData.title,
+            description: this.taskData.description,
             CategoryId: catId,
         }
         this.$emit("addTask", data)
         this.taskData.CategoryId = ""
         this.taskData.title = ""
+        this.taskData.description = ""
     },
     deleteTask(taskId){
         this.$emit("deleteTask", taskId)
     },
     editTask(data){
         this.$emit("editTask", data)
+    },
+    updateCatTask(data){
+        this.$emit("updateCatTask", data)
     }
   },
   computed: {
@@ -97,7 +109,7 @@ export default {
       return filter;
     },
   },
-  props: ["category", "tasks"],
+  props: ["category", "tasks", "categories"],
 };
 </script>
 

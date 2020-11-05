@@ -1,6 +1,7 @@
 const {User} = require('../models/index');
 const {generateHashPassword, verifyPassword} = require('../helpers/bcrypt');
 const {generateToken} = require('../helpers/jwt');
+const {OAuth2Client} = require('google-auth-library');
 
 class Controller {
     static async register(req, res, next) {
@@ -44,7 +45,54 @@ class Controller {
         }
     }
 
-    static async googleLogin(req, res) {}
+    static async googleLogin(req, res, next) {
+        try {
+            const token = req.body.access_token_google
+            // console.log(token, "ni token di controller google") udh ada
+            const client = new OAuth2Client(process.env.CLIENT_ID);
+            const ticket = await client.verifyIdToken({
+                idToken: token,
+                audience: process.env.CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+                // Or, if multiple clients access the backend:
+                //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+            });
+            const payload = ticket.getPayload();
+            // console.log(payload) udah muncul
+            // If request specified a G Suite domain:
+            // const domain = payload['hd'];
+            // {where:{email: payload.email}}
+            const user = await User.findOrCreate({
+                where:{
+                    email: payload.email
+                },
+                defaults: {
+                    name: payload.name,
+                    email: payload.email,
+                    password: generateHashPassword("random")
+                }
+            })
+            // console.log(user[0].email, "ini dr controller")
+            let data
+            if(Array.isArray(user)) {
+                data = {
+                    id: user[0].id,
+                    name: user[0].name || "Mr",
+                    email: user[0].email
+                }
+            } else {
+                data = {
+                    id: user.id,
+                    name: user.name || "Mr",
+                    email: user.email
+                }
+            }
+
+            const accessToken = generateToken(data)
+            res.status(200).json({access_token: accessToken})   
+        } catch (err) {
+            next(err)
+        }
+    }
 }
 
 module.exports = Controller

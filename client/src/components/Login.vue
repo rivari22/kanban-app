@@ -58,18 +58,19 @@ export default {
             this.login.password = ""
         },
         OnGoogleAuthSuccess(idToken){
-            console.log(idToken)
-            // this.$emit("OnGoogleAuthSuccess", idToken)
+            // console.log(idToken)
+            this.$emit("OnGoogleAuthSuccess", idToken)
+            
         },
         OnGoogleAuthFail(error) {
-            console.log(error)
-
+            // console.log(error)
+            this.$emit("OnGoogleAuthFail", error)
             // this.$emit("OnGoogleAuthFail", error)
         },
         signOut(){
             auth2 = gapi.auth2.getAuthInstance();
             auth2.signOut().then(function () {
-            console.log('User signed out.');
+                console.log('User signed out.');
             });
             // this.$emit("signOut")
         }

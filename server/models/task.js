@@ -27,6 +27,7 @@ module.exports = (sequelize, DataTypes) => {
   };
   Task.init({
     title: DataTypes.STRING,
+    description: DataTypes.STRING,
     CategoryId: DataTypes.INTEGER
   }, {
     sequelize,

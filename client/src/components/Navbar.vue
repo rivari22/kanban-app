@@ -12,8 +12,9 @@
                     <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
                 </li>
                 </ul>
-                <button class="btn btn-outline-primary my-2 my-sm-0 mr-4" id="btn-register-nav" type="submit" v-on:click="changePage('register-page')">Register</button>
-                <button class="btn btn-primary my-2 my-sm-0" id="btn-login-nav" type="submit" v-on:click="changePage('login-page')">Login</button>
+                <button class="btn btn-outline-primary my-2 my-sm-0 mr-4" id="btn-register-nav" type="submit" v-on:click="changePage('register-page')" v-show="!access_token">Register</button>
+                <button class="btn btn-primary my-2 my-sm-0" id="btn-login-nav" type="submit" v-on:click="changePage('login-page')"  v-show="!access_token">Login</button>
+                <button class="btn btn-outline-danger my-2 my-sm-0" id="btn-logout-nav" type="submit" v-on:click="logoutMethod"  v-show="access_token">Logout</button>
             </div>
             </div>
         </nav>
@@ -31,8 +32,12 @@ export default {
     methods: {
         changePage(pageName){
             this.$emit("changePage", pageName)
+        },
+        logoutMethod(){
+            this.$emit("logoutMethod")
         }
-    }
+    },
+    props: ["access_token"]
 }
 </script>
 

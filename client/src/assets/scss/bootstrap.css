@@ -10806,6 +10806,7 @@ a.text-dark:hover, a.text-dark:focus {
 body {
   font-family: 'Montserrat', sans-serif;
   background-color: #f3f4fa;
+  height: 100vh;
 }
 
 .login {

@@ -6,10 +6,12 @@
                         v-for="category in categories" 
                         v-bind:key="category.id"
                         :category="category"
+                        :categories="categories"
                         :tasks="tasks"
                         @addTask="addTask"
                         @deleteTask="deleteTask"
                         @editTask="editTask"
+                        @updateCatTask="updateCatTask"
                     ></Category>
 
                     <div class="col">
@@ -54,7 +56,10 @@ export default {
         },
         editTask(data){
             this.$emit("editTask", data)
-        }
+        },
+        updateCatTask(data){
+            this.$emit("updateCatTask", data)
+        }   
     },
     props: ["categories", "tasks"]
 }

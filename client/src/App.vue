@@ -1,13 +1,17 @@
 <template>
-  <div>
+  <div class="h-100">
       <Navbar
         @changePage="changePage"
+        @logoutMethod="logoutMethod"
+        :access_token="access_token"
       ></Navbar>
 
       <Login 
         v-if="pageName == 'login-page'"
         @loginMethod="loginMethod"
         :errorMsg="errorMsg"
+        @OnGoogleAuthSuccess="OnGoogleAuthSuccess"
+        @OnGoogleAuthFail="OnGoogleAuthFail"
       ></Login>
 
       <Register 
@@ -23,6 +27,7 @@
         @addTask="addTask"
         @deleteTask="deleteTask"
         @editTask="editTask"
+        @updateCatTask="updateCatTask"
       ></Content>
   </div>
 </template>
@@ -38,7 +43,7 @@ export default {
     name: "App",
     data(){
         return {
-            pageName: "login-page",
+            pageName: "",
             errorMsg: "",
             access_token: localStorage.access_token || null,
             tasks: [],
@@ -82,30 +87,66 @@ export default {
             .then(response => {
                 console.log(response)
                 if(response.message) {
-                this.errorMsg = response.message
+                    this.errorMsg = response.message
                 } else {
                     localStorage.setItem("access_token", response.access_token) 
-                    this.login.email = ""
-                    this.login.password = ""
+                    this.changePage("content-page")
+                    this.fetchTask(response.access_token)
+                    this.fetchCategory(response.access_token)
+                    // this.checkToken()
                 }
             })
             .catch(err => {
                 console.log(err)
             })
         },
+        OnGoogleAuthSuccess(tokenGoogle){
+            const access_token_google = tokenGoogle
+            // console.log(tokenGoogle, "ni dr oauth google")
+            axios({
+                method: "POST",
+                url: "/googleLogin",
+                data: {
+                    access_token_google
+                }
+            })
+            .then(response => {
+                // console.log(response.data)
+                localStorage.setItem("access_token", response.data.access_token) 
+                this.changePage("content-page")
+                this.fetchTask(response.data.access_token)
+                this.fetchCategory(response.data.access_token)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+        },
+        OnGoogleAuthFail(err){
+            console.log(err)
+        },
+        logoutMethod(){
+            localStorage.clear()
+            this.changePage("login-page")
+        },
         checkToken(){
             if(this.access_token) {
                 this.pageName = "content-page"
+                this.fetchTask()
+                this.fetchCategory()
+                return true
+            } else {
+                this.pageName = "login-page"
+                // this.fetchTask()
+                // this.fetchCategory()
+                return false
             }
-            this.fetchTask()
-            this.fetchCategory()
         },
-        fetchTask(){
+        fetchTask(token){
             axios({
                 method: "GET",
                 url: `/tasks`,
                 headers: {
-                    access_token: this.access_token
+                    access_token: token || this.access_token
                 }
             })
             .then(response => {
@@ -114,12 +155,12 @@ export default {
             })
             .catch(err => console.log(err))
         },
-        fetchCategory(){
+        fetchCategory(token){
             axios({
                 method: "GET",
                 url: `/categories`,
                 headers: {
-                    access_token: this.access_token
+                    access_token: token || this.access_token
                 }
             })
             .then(response => {
@@ -133,8 +174,8 @@ export default {
             method: "POST",
             url: `/tasks`,
             data: {
-                // description: this.description, nanti akan ada
                 title: data.title,
+                description: data.description,
                 CategoryId: data.CategoryId
             },
             headers: {
@@ -142,8 +183,8 @@ export default {
             }
             })
             .then(response => {
-            this.fetchTask()
-            this.fetchCategory()
+                this.fetchTask()
+                this.fetchCategory()
             })
             .catch(err => console.log(err))
         },
@@ -171,7 +212,25 @@ export default {
                     access_token: this.access_token
                 },
                 data: {
-                    title: this.taskAdd.title,
+                    title: data.title,
+                    description: data.description,
+                }
+            })
+            .then(response => {       
+                this.fetchTask()
+                this.fetchCategory()
+            })
+            .catch(err => console.log(err))
+        },
+        updateCatTask(data) {
+            axios({
+                method: "PATCH",
+                url: `/tasks/${data.id}`,
+                headers: {
+                    access_token: this.access_token
+                },
+                data: {
+                    CategoryId: data.CategoryId
                 }
             })
             .then(response => {       
