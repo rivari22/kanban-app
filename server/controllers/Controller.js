@@ -1,9 +1,20 @@
-const {User} = require('../models/index');
+const {User, UserOrganizationTasks, Task} = require('../models/index');
 const {generateHashPassword, verifyPassword} = require('../helpers/bcrypt');
 const {generateToken} = require('../helpers/jwt');
 const {OAuth2Client} = require('google-auth-library');
 
 class Controller {
+    static async getAllConj(req, res, next) {
+        try {
+            const conj = await UserOrganizationTasks.findAll({
+                include: [User, Task]
+            })
+            res.status(200).json(conj)
+        } catch (err) {
+            next(err)
+        }
+    }
+
     static async register(req, res, next) {
         const data = {
             name: req.body.name,
@@ -38,7 +49,7 @@ class Controller {
             const access_token = generateToken({
                 id: user.id, name: user.name, email: user.email
             })
-            res.status(200).json({access_token})
+            res.status(200).json({access_token, name: user.name})
             
         } catch (err) {
             next(err)
@@ -88,7 +99,7 @@ class Controller {
             }
 
             const accessToken = generateToken(data)
-            res.status(200).json({access_token: accessToken})   
+            res.status(200).json({access_token: accessToken, name: data.name})   
         } catch (err) {
             next(err)
         }

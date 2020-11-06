@@ -6,7 +6,7 @@
                     <img src="../assets/images/login-authen.svg" class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="">
                 </div>
                 <div class="col-4">
-                    <div class="card p-3 shadow">
+                    <div class="card p-3 shadow animate__animated animate__backInDown animate__slower">
                         <div class="card-body">
                             <h4 class="card-title mb-4">Login</h4>
                             <form action="" method="post" id="form-login" v-on:submit.prevent="loginMethod">
@@ -20,13 +20,12 @@
                                 <input type="password" class="form-control" name="password-login" id="password-login" aria-describedby="helpId" placeholder="" v-model="login.password">
                                 <small id="helpId" class="form-text text-muted">Insert your password</small>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Login</button>
+                                <button type="submit" class="btn btn-primary shadow">Login</button>
                                 <br> <br>
                                 <span id="error-msg-login" class="text-danger error-msg">{{errorMsg}}</span>
                             </form>
-                              <button v-google-signin-button="clientId" class="google-signin-button"> Continue with Google
-                              </button> <br>
-                              <a href="#" @click="signOut()">Sign out</a>
+                              <button v-google-signin-button="clientId" class="google-signin-button"> Sign In Google
+                              </button>
                         </div>
                     </div>
                 </div>
@@ -66,13 +65,6 @@ export default {
             // console.log(error)
             this.$emit("OnGoogleAuthFail", error)
             // this.$emit("OnGoogleAuthFail", error)
-        },
-        signOut(){
-            auth2 = gapi.auth2.getAuthInstance();
-            auth2.signOut().then(function () {
-                console.log('User signed out.');
-            });
-            // this.$emit("signOut")
         }
     },
     props: ["errorMsg"]
@@ -82,7 +74,7 @@ export default {
 <style>
     .google-signin-button {
     color: white;
-    background-color: red;
+    background-color: rgb(8, 80, 139);
     height: 50px;
     font-size: 16px;
     border-radius: 10px;

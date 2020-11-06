@@ -20,6 +20,20 @@ class CategoryController {
             next(err)
         }
     }
+
+    static async deleteCategory(req, res, next){
+        try {
+            const catId = +req.params.id
+            const category = await Category.destroy({
+                where: {
+                    id: catId
+                }
+            }) 
+            res.status(200).json({msg: `Successfully delete category with id: ${catId}`})
+        } catch (err) {
+            next(err)
+        }
+    }
 }
 
 module.exports = CategoryController

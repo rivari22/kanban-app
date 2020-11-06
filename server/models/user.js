@@ -52,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
     hooks: {
       beforeCreate: (user, opt) => {
         if(user.name == "" || !user.name) {
-          user.name = "Mr.undefined"
+          user.name = user.email
         }
       }
     },

@@ -4,6 +4,7 @@
         @changePage="changePage"
         @logoutMethod="logoutMethod"
         :access_token="access_token"
+        :name="name"
       ></Navbar>
 
       <Login 
@@ -12,12 +13,15 @@
         :errorMsg="errorMsg"
         @OnGoogleAuthSuccess="OnGoogleAuthSuccess"
         @OnGoogleAuthFail="OnGoogleAuthFail"
+        @changePage="changePage"
+        class="animate__animated animate__zoomInDown"
       ></Login>
 
       <Register 
         v-else-if="pageName == 'register-page'"
         @registerMethod="registerMethod"
         :errorMsg="errorMsg"
+        class="animate__animated animate__zoomInDown"
       ></Register>
 
       <Content
@@ -28,6 +32,10 @@
         @deleteTask="deleteTask"
         @editTask="editTask"
         @updateCatTask="updateCatTask"
+        @updateCategoryDrag="updateCategoryDrag"
+        @addCategory="addCategory"
+        @deleteCategory="deleteCategory"
+        :conjunctions="conjunctions"
       ></Content>
   </div>
 </template>
@@ -38,6 +46,8 @@ import Login from "./components/Login"
 import Register from "./components/Register"
 import Content from "./components/Content"
 import axios from "./config/axios"
+import Swal from 'sweetalert2'
+import {successLogin, successLogout, successCRUD} from "./helpers/swal"
 
 export default {
     name: "App",
@@ -45,9 +55,11 @@ export default {
         return {
             pageName: "",
             errorMsg: "",
-            access_token: localStorage.access_token || null,
+            access_token: null || localStorage.access_token,
+            name: null || localStorage.name,
             tasks: [],
             categories: [],
+            conjunctions: []
         }
     },
     methods: {
@@ -71,6 +83,11 @@ export default {
                 this.errorMsg = res.message
                 } else {
                 this.pageName = "login-page"
+                Swal.fire(
+                    'Success create a new member!',
+                    'Lets login!',
+                    'success'
+                )
                 }
             })
             .catch(err => console.log(err))
@@ -89,11 +106,16 @@ export default {
                 if(response.message) {
                     this.errorMsg = response.message
                 } else {
-                    localStorage.setItem("access_token", response.access_token) 
+                    localStorage.setItem("access_token", response.access_token)
+                    localStorage.setItem("name", response.name)
                     this.changePage("content-page")
                     this.fetchTask(response.access_token)
                     this.fetchCategory(response.access_token)
+                    this.fetchConjUserOrganizationTask(response.access_token)
+                    this.access_token = response.access_token
+                    this.name = response.name
                     // this.checkToken()
+                    successLogin()
                 }
             })
             .catch(err => {
@@ -113,9 +135,13 @@ export default {
             .then(response => {
                 // console.log(response.data)
                 localStorage.setItem("access_token", response.data.access_token) 
+                localStorage.setItem("name", response.data.name) 
                 this.changePage("content-page")
                 this.fetchTask(response.data.access_token)
                 this.fetchCategory(response.data.access_token)
+                this.fetchConjUserOrganizationTask(response.data.access_token)
+                this.access_token = response.data.access_token
+                this.name = response.data.name
             })
             .catch(err => {
                 console.log(err)
@@ -125,14 +151,34 @@ export default {
             console.log(err)
         },
         logoutMethod(){
-            localStorage.clear()
-            this.changePage("login-page")
+            Swal.fire({
+            title: 'Are you sure?',
+            text: 'You will not be able to manage your kanban after this',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Logout!',
+            cancelButtonText: 'No'
+            }).then((result) => {
+            if (result.value) {
+                this.access_token = ""
+                this.name = ""
+                localStorage.clear()
+                this.changePage("login-page")
+                this.$emit("changePage", "login-page")
+                // auth2 = gapi.auth2.getAuthInstance();
+                // auth2.signOut().then(function () {
+                //     console.log('User signed out.');
+                // });
+                successLogout()
+            }
+            })
         },
         checkToken(){
             if(this.access_token) {
                 this.pageName = "content-page"
                 this.fetchTask()
                 this.fetchCategory()
+                this.fetchConjUserOrganizationTask()
                 return true
             } else {
                 this.pageName = "login-page"
@@ -164,7 +210,7 @@ export default {
                 }
             })
             .then(response => {
-            this.categories = response.data
+                this.categories = response.data
             // console.log(JSON.stringify(response.data, null, 2))
             })
             .catch(err => console.log(err))
@@ -185,6 +231,8 @@ export default {
             .then(response => {
                 this.fetchTask()
                 this.fetchCategory()
+                this.fetchConjUserOrganizationTask()
+                successCRUD('Success add a new task')
             })
             .catch(err => console.log(err))
         },
@@ -198,11 +246,17 @@ export default {
                 }
             })
             .then(response => {
-                console.log(response.data, "ni")
+                console.log(response, "ni")
                 this.fetchTask()
                 this.fetchCategory()
+                this.fetchConjUserOrganizationTask()
+
             })
-            .catch(err => console.log(JSON.stringify(err, null, 2)))
+            .catch(err => {
+                console.log(JSON.stringify(err.response.data, null, 2))
+                Swal.fire('Error', err.response.data.message, 'error')
+                // console.log(err.responseJSON.message)
+            })
         },
         editTask(data){
             axios({
@@ -219,8 +273,10 @@ export default {
             .then(response => {       
                 this.fetchTask()
                 this.fetchCategory()
+                this.fetchConjUserOrganizationTask()
+
             })
-            .catch(err => console.log(err))
+            .catch(err => Swal.fire('Error', err.response.data.message, 'error'))
         },
         updateCatTask(data) {
             axios({
@@ -236,6 +292,94 @@ export default {
             .then(response => {       
                 this.fetchTask()
                 this.fetchCategory()
+                this.fetchConjUserOrganizationTask()
+
+            })
+            .catch(err => {
+                this.fetchTask()
+                this.fetchCategory()
+                this.fetchConjUserOrganizationTask()
+
+                Swal.fire('Error', err.response.data.message, 'error')
+            })
+        },
+        updateCategoryDrag(data){
+            axios({
+                method: "PATCH",
+                url: `/tasks/${data.id}`,
+                headers: {
+                    access_token: this.access_token
+                },
+                data: {
+                    CategoryId: data.CategoryId
+                }
+            })
+            .then(response => {       
+                this.fetchTask()
+                this.fetchCategory()
+                this.fetchConjUserOrganizationTask()
+
+            })
+            .catch(err => {
+                this.fetchTask()
+                this.fetchCategory()
+                this.fetchConjUserOrganizationTask()
+
+                Swal.fire('Error', err.response.data.message, 'error')
+            })
+        },
+        addCategory(data) {
+            axios({
+                method: "POST",
+                url: "/categories",
+                headers: {
+                    access_token: this.access_token
+                },
+                data: {
+                    name: data.name
+                }
+            })
+            .then(response => {
+                this.fetchTask()
+                this.fetchCategory()
+                this.fetchConjUserOrganizationTask()
+                successCRUD('Success add a new category')
+            })
+            .catch(err => console.log(err))
+        },
+        deleteCategory(id){
+            console.log(id)
+            axios({
+                method:"DELETE",
+                url: `/categories/${+id}`,
+                headers: {
+                    access_token: this.access_token
+                }
+            })
+            .then(response => {
+                console.log(response, "ni")
+                this.fetchTask()
+                this.fetchCategory()
+                this.fetchConjUserOrganizationTask()
+            })
+            .catch(err => {
+                console.log(JSON.stringify(err.response.data, null, 2))
+                Swal.fire('Error', err.response.data.message, 'error')
+                // console.log(err.responseJSON.message)
+            })
+        },
+        fetchConjUserOrganizationTask(token){
+            axios({
+                method: "GET",
+                url: `/conjunctions`,
+                headers: {
+                    access_token: token || this.access_token
+                }
+            })
+            .then(response => {
+                this.conjunctions = response.data
+                console.log(response.data)
+            // console.log(JSON.stringify(response.data, null, 2))
             })
             .catch(err => console.log(err))
         }
