@@ -1,5 +1,10 @@
 # kanban-app
 
+server deploy heroku
+client deploy firebase
+
+demo link : https://kanban-app-rivari.web.app/
+
 **Register**
 ----
 
